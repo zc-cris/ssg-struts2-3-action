@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+	<!-- 配置struts2 可以受理请求的扩展名:以.action，.do,结尾或者什么都不写均可 -->
+	<constant name="struts.action.extension" value="action,do,"></constant>
+	<!-- 通配符的配置方法一：需要设置这个常量为true，然后再在action中单独设置 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="true"/>
+
+	<package name="actionContext" extends="struts-default" >
+		<!-- 通配符的配置方法二：在package里面添加允许通过通配符的方法 -->
+		<!--  <global-allowed-methods>login</global-allowed-methods> -->
+	
+		<action name="testActionContext" class="cn.zc.cris.TestActionContextAction">
+			<result>/show.jsp</result>
+		</action>
+		<action name="testAware" class="cn.zc.cris.TestAwareAction">
+			<result>/aware.jsp</result>
+		</action>
+		<action name="testServletActionContext" class="cn.zc.cris.TestServletActionContext">
+			<result>/show.jsp</result>
+		</action>
+		<action name="testServletAware" class="cn.zc.cris.TestServletAwareAction">
+			<result>/show.jsp</result>
+		</action>
+		
+		<!-- 使用struts2自带的默认Action类处理 -->
+		<action name="user-loginUI">
+			<result>/login.jsp</result>
+		</action>
+		<action name="login" class="cn.zc.cris.user.login.UserLogin" method="login">
+			<result name="login-success">/login-success.jsp</result>
+		</action>
+		<action name="logout" class="cn.zc.cris.user.login.UserLogin" method="logout">
+			<result name="logout-success">/index.jsp</result>
+		</action>
+		
+		<action name="TestResultAction" class="cn.zc.cris.test.result.TestResultAction">
+			<!-- 默认就是dispacher，即请求转发 -->
+			<result name="1" type="dispatcher">/result/1.jsp</result>
+			<!-- 重定向到页面 -->
+			<result name="2" type="redirect">/result/2.jsp</result>
+			<!-- 重定向到action的两种方式 
+			<result name="3" type="redirect">/zc-cris/testAction.do</result>
+			 -->
+			<result name="3" type="redirectAction">
+				<param name="actionName">testAction</param>
+				<param name="namespace">/zc-cris</param>
+			</result>
+			 
+			 <!-- 转发到一个action,只能通过这种方式 --> 
+			<result name="4" type="chain">
+				<param name="actionName">testAction</param>
+				<param name="namespace">/zc-cris</param>
+			</result>
+		</action>
+		
+		<action name="userAction-*" class="cn.zc.cris.Wildcards.UserAction" method="{1}">
+			<result name="{1}-success">/success.jsp</result>
+			<!-- 通配符的使用方法一：上面设置完常量后，还要在action中设置允许使用通配符的方法，
+				execute,input,back,cancel,browse,save,delete,list,index这些方法不需配置，即可使用  
+			-->
+			<allowed-methods>add,update,query</allowed-methods>
+		</action>
+		
+	</package>
+	
+	<package name="testResult" extends="struts-default" namespace="/zc-cris">
+		<action name="testAction" class="cn.zc.cris.test.result.TestAction">
+			<result>/result/4.jsp</result>
+		</action>
+	</package>
+</struts>
+
